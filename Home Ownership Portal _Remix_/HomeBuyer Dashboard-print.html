@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Pathway · HomeBuyer (Print)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter+Tight:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:#F5EFE6;color:#22201B;font-family:"Inter Tight",system-ui,sans-serif;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  ::-webkit-scrollbar{display:none}
+
+  .page{
+    width:100%;
+    min-height:100vh;
+    padding:48px 56px;
+    display:flex;
+    flex-direction:column;
+    page-break-after:always;
+    break-after:page;
+  }
+  .page:last-child{page-break-after:auto;break-after:auto}
+
+  .page-head{
+    display:flex;align-items:flex-end;justify-content:space-between;
+    border-bottom:1px solid rgba(34,32,27,0.15);
+    padding-bottom:14px;margin-bottom:28px;
+  }
+  .page-head .eyebrow{
+    font-family:"Inter Tight",sans-serif;font-size:11px;font-weight:600;
+    color:rgba(34,32,27,0.55);letter-spacing:1.4px;text-transform:uppercase;
+  }
+  .page-head h1{
+    font-family:"Instrument Serif",serif;font-size:38px;line-height:1;margin:6px 0 0;
+    letter-spacing:-0.4px;font-weight:400;
+  }
+  .page-head .meta{
+    font-family:"Instrument Serif",serif;font-style:italic;font-size:15px;
+    color:rgba(34,32,27,0.55);text-align:right;
+  }
+
+  .grid{display:grid;grid-template-columns:auto 1fr;gap:48px;flex:1;align-items:flex-start}
+  .phone-wrap{display:flex;flex-direction:column;align-items:center;gap:10px}
+  .phone-cap{font-family:"Instrument Serif",serif;font-style:italic;font-size:12px;color:rgba(34,32,27,0.5)}
+
+  .notes{padding-top:8px}
+  .notes h2{font-family:"Instrument Serif",serif;font-size:26px;line-height:1.1;margin:0 0 6px;letter-spacing:-0.3px;font-weight:400}
+  .notes .lede{font-family:"Instrument Serif",serif;font-style:italic;font-size:16px;color:rgba(34,32,27,0.65);margin:0 0 22px;line-height:1.4}
+  .notes h3{font-family:"Inter Tight",sans-serif;font-size:11px;font-weight:600;letter-spacing:1.2px;text-transform:uppercase;color:rgba(34,32,27,0.55);margin:18px 0 8px}
+  .notes ul{margin:0;padding-left:18px;list-style:none}
+  .notes ul li{font-family:"Inter Tight",sans-serif;font-size:13px;line-height:1.55;color:#22201B;padding:5px 0;position:relative;padding-left:14px}
+  .notes ul li::before{content:'';position:absolute;left:0;top:11px;width:5px;height:5px;border-radius:3px;background:#B85C3D}
+  .notes ul li b{font-weight:600}
+  .notes .swatches{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px}
+  .notes .swatch{display:flex;align-items:center;gap:8px;font-family:"Inter Tight",sans-serif;font-size:12px;color:rgba(34,32,27,0.7)}
+  .notes .swatch .chip{width:18px;height:18px;border-radius:5px;border:1px solid rgba(34,32,27,0.1)}
+
+  .cover{display:flex;flex-direction:column;justify-content:space-between;min-height:100vh;padding:72px 80px}
+  .cover .top{display:flex;justify-content:space-between;align-items:flex-start}
+  .cover .brand{font-family:"Inter Tight",sans-serif;font-size:13px;font-weight:600;letter-spacing:2px;text-transform:uppercase}
+  .cover .meta{font-family:"Instrument Serif",serif;font-style:italic;font-size:15px;color:rgba(34,32,27,0.6)}
+  .cover .center{display:flex;flex-direction:column;gap:18px;align-items:flex-start}
+  .cover h1{font-family:"Instrument Serif",serif;font-size:96px;line-height:0.95;margin:0;font-weight:400;letter-spacing:-1.5px;max-width:880px}
+  .cover h1 em{font-style:italic;color:#B85C3D}
+  .cover .sub{font-family:"Instrument Serif",serif;font-style:italic;font-size:22px;color:rgba(34,32,27,0.65);max-width:660px;line-height:1.35}
+  .cover .bottom{display:flex;gap:36px;font-family:"Inter Tight",sans-serif;font-size:12px;color:rgba(34,32,27,0.55);letter-spacing:0.4px;text-transform:uppercase;font-weight:600}
+  .cover .bottom span b{display:block;font-family:"Instrument Serif",serif;font-size:22px;color:#22201B;letter-spacing:-0.2px;text-transform:none;font-weight:400;margin-top:4px}
+
+  .legend{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;padding:20px 0 0;border-top:1px solid rgba(34,32,27,0.12);margin-top:16px}
+  .legend .step{padding:0}
+  .legend .step .num{font-family:"Instrument Serif",serif;font-size:24px;color:#B85C3D}
+  .legend .step .lbl{font-family:"Inter Tight",sans-serif;font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;margin-top:2px}
+  .legend .step .desc{font-family:"Inter Tight",sans-serif;font-size:11.5px;color:rgba(34,32,27,0.65);line-height:1.4;margin-top:4px}
+
+  /* Phone shell — static replica (no overflow) */
+  .phone{
+    width:393px;
+    border-radius:48px;
+    background:#F5EFE6;color:#22201B;
+    font-family:"Inter Tight",sans-serif;
+    border:1px solid rgba(34,32,27,0.10);
+    box-shadow:0 16px 40px rgba(40,20,10,0.12);
+    overflow:hidden;
+    position:relative;
+  }
+  .phone .notch{position:absolute;top:11px;left:50%;transform:translateX(-50%);width:124px;height:36px;border-radius:22px;background:#000;z-index:5}
+  .phone .status{display:flex;align-items:center;justify-content:space-between;padding:18px 28px 0;height:54px;font-family:-apple-system,SF Pro,system-ui;font-weight:600;font-size:16px}
+  .phone .stage-area{padding:0 0 0;}
+
+  @page{size:letter landscape;margin:0.4in}
+  @media print{
+    .page{padding:36px 44px;min-height:auto;height:auto}
+    .cover{padding:60px 64px;min-height:auto;height:100vh}
+    .phone{box-shadow:none}
+  }
+</style>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel" src="shared.jsx"></script>
+<script type="text/babel" src="screen-today.jsx"></script>
+<script type="text/babel" src="screens-other.jsx"></script>
+
+<script type="text/babel">
+const STAGE = "savings";
+const T = PALETTE.light;
+const ctx = { T, dark:false, density:1, showPartners:true, progressStyle:'segmented', stage: STAGE };
+
+// Static phone for print — no FAB, no nav animation. Bottom nav rendered as a static strip.
+function PhonePrint({ children, label }) {
+  return (
+    <ThemeCtx.Provider value={ctx}>
+      <div className="phone" data-screen-label={label}>
+        <div className="notch"/>
+        <div className="status">
+          <div>9:41</div>
+          <div style={{display:'flex',gap:6,alignItems:'center'}}>
+            <svg width="17" height="11" viewBox="0 0 19 12"><rect x="0" y="7.5" width="3" height="4.5" rx="0.7" fill="#22201B"/><rect x="4.5" y="5" width="3" height="7" rx="0.7" fill="#22201B"/><rect x="9" y="2.5" width="3" height="9.5" rx="0.7" fill="#22201B"/><rect x="13.5" y="0" width="3" height="12" rx="0.7" fill="#22201B"/></svg>
+            <svg width="25" height="12" viewBox="0 0 27 13"><rect x="0.5" y="0.5" width="23" height="12" rx="3.5" stroke="#22201B" strokeOpacity="0.4" fill="none"/><rect x="2" y="2" width="17" height="9" rx="2" fill="#22201B"/></svg>
+          </div>
+        </div>
+        <div style={{position:'relative'}}>
+          {children}
+          <BottomNav active={label} onChange={()=>{}}/>
+        </div>
+      </div>
+    </ThemeCtx.Provider>
+  );
+}
+
+function PageHead({ idx, title, sub }) {
+  return (
+    <div className="page-head">
+      <div>
+        <div className="eyebrow">{`0${idx} · Pathway HomeBuyer`}</div>
+        <h1>{title}</h1>
+      </div>
+      <div className="meta">{sub}</div>
+    </div>
+  );
+}
+
+function Page({ idx, title, sub, screen, label, notes }) {
+  return (
+    <section className="page">
+      <PageHead idx={idx} title={title} sub={sub}/>
+      <div className="grid">
+        <div className="phone-wrap">
+          <PhonePrint label={label}>{screen}</PhonePrint>
+          <div className="phone-cap">393 × auto · iOS · Light</div>
+        </div>
+        <div className="notes">{notes}</div>
+      </div>
+    </section>
+  );
+}
+
+function Cover() {
+  return (
+    <section className="page cover">
+      <div className="top">
+        <div className="brand">Pathway · HomeBuyer</div>
+        <div className="meta">Hi-fi prototype · v1<br/>May 2026</div>
+      </div>
+      <div className="center">
+        <div className="brand" style={{color:'#B85C3D'}}>Mobile dashboard</div>
+        <h1>The path to a home, <em>made navigable.</em></h1>
+        <div className="sub">Five screens for first-time buyers — guided by their coach, paced by their progress, bookended by the partners they actually need.</div>
+      </div>
+      <div>
+        <div className="legend">
+          {STEPS.map((s,i) => (
+            <div className="step" key={s.key}>
+              <div className="num">0{i+1}</div>
+              <div className="lbl">{s.short}</div>
+              <div className="desc">{s.full}</div>
+            </div>
+          ))}
+        </div>
+        <div className="bottom" style={{marginTop:24}}>
+          <span>Stage shown<b style={{color:'#B85C3D'}}>Savings</b></span>
+          <span>Screens<b>5 + sheets</b></span>
+          <span>Theme<b>Warm clay · Light</b></span>
+          <span>Persona<b>Maya, 28 · saving</b></span>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function App() {
+  return (
+    <div>
+      <Cover/>
+
+      <Page idx={2} title="Today" sub={"Default landing · stage-aware"}
+        label="home"
+        screen={<ScreenToday onSheet={()=>{}} onTab={()=>{}}/>}
+        notes={
+          <div>
+            <h2>The home screen is a daily companion.</h2>
+            <p className="lede">It greets the user, names their stage in the journey, surfaces 1-tap actions, and pins their coach above the fold.</p>
+
+            <h3>What's on the page</h3>
+            <ul>
+              <li><b>Greeting + on-track line.</b> Reframes the goal as imminent and reassuring.</li>
+              <li><b>5-step segmented progress.</b> Plan → Credit → Savings → Pre-approval → Ready.</li>
+              <li><b>Two metric cards.</b> Credit score and savings, each with status pill, delta, target progress.</li>
+              <li><b>Coach Dr. Drummond, pinned.</b> One-line nudge + Book CTA.</li>
+              <li><b>To-do today.</b> Three concrete actions, color-tagged by category, time-estimated.</li>
+              <li><b>Upcoming session, partner boosts, education.</b> All scoped to the user's stage.</li>
+            </ul>
+
+            <h3>Brand palette</h3>
+            <div className="swatches">
+              <div className="swatch"><div className="chip" style={{background:'#F5EFE6'}}/>Cream</div>
+              <div className="swatch"><div className="chip" style={{background:'#B85C3D'}}/>Clay</div>
+              <div className="swatch"><div className="chip" style={{background:'#6B8466'}}/>Sage</div>
+              <div className="swatch"><div className="chip" style={{background:'#BC8932'}}/>Ochre</div>
+              <div className="swatch"><div className="chip" style={{background:'#6E4F62'}}/>Plum</div>
+              <div className="swatch"><div className="chip" style={{background:'#22201B'}}/>Ink</div>
+            </div>
+
+            <h3>Type</h3>
+            <ul>
+              <li><b>Instrument Serif</b> — display & headlines, occasional italic for warmth.</li>
+              <li><b>Inter Tight</b> — UI, body, numerals.</li>
+            </ul>
+          </div>
+        }/>
+
+      <Page idx={3} title="Progress" sub={"Step-by-step journey · activity history"}
+        label="progress"
+        screen={<ScreenProgress onSheet={()=>{}}/>}
+        notes={
+          <div>
+            <h2>The plan, made visible.</h2>
+            <p className="lede">A vertical roadmap so the user can always tell where they are, what just happened, and what's coming next.</p>
+
+            <h3>Two views, one screen</h3>
+            <ul>
+              <li><b>Journey.</b> Each step is a card — completed, current, or locked. Current step shows live progress and ETA.</li>
+              <li><b>Activity.</b> Reverse-chronological log of every milestone, score change, savings update, and coach session.</li>
+            </ul>
+
+            <h3>Why this matters</h3>
+            <ul>
+              <li>First-time buyers can't tell the order of operations. This screen <b>names it</b>.</li>
+              <li>Locked future steps reduce overwhelm — the system says "not yet."</li>
+              <li>Activity feeds family conversations: "look, we moved up the score."</li>
+            </ul>
+
+            <h3>Stage shown</h3>
+            <ul>
+              <li>Savings is the active step. Goal, Plan, and Credit are checked. Pre-Approved is locked.</li>
+            </ul>
+          </div>
+        }/>
+
+      <Page idx={4} title="Coach" sub={"Chat · scheduling · always-on"}
+        label="coach"
+        screen={<ScreenCoach onSheet={()=>{}}/>}
+        notes={
+          <div>
+            <h2>Dr. Drummond is the product.</h2>
+            <p className="lede">Pathway's differentiator is a real human coach. The Coach screen makes that relationship feel persistent, friendly, and immediately reachable.</p>
+
+            <h3>Layout</h3>
+            <ul>
+              <li><b>Identity card.</b> Name, role, presence indicator, primary book CTA.</li>
+              <li><b>Next session bar.</b> Confirmed time, with a one-tap reschedule.</li>
+              <li><b>Chat thread.</b> Asynchronous, low-pressure, replies within 2h.</li>
+              <li><b>Composer.</b> Single-line input, send disabled until typed.</li>
+            </ul>
+
+            <h3>Tone</h3>
+            <ul>
+              <li>Coach speaks in plain English. No financial jargon.</li>
+              <li>Messages reference the user's actual stage and recent updates.</li>
+              <li>Send button glows clay only when ready — no false affordance.</li>
+            </ul>
+          </div>
+        }/>
+
+      <Page idx={5} title="Partners" sub={"Curated boosts · stage-matched"}
+        label="partners"
+        screen={<ScreenPartners/>}
+        notes={
+          <div>
+            <h2>The marketplace, not a marketplace.</h2>
+            <p className="lede">Partners are stage-matched and editorially curated — never an ad-feed. The user sees only what's relevant to where they are right now.</p>
+
+            <h3>Categories</h3>
+            <ul>
+              <li><b>Credit.</b> Score-builders, dispute tools.</li>
+              <li><b>Savings.</b> High-yield accounts, round-ups, automation.</li>
+              <li><b>Lenders.</b> Soft pre-qualify, no-credit-hit pre-approval.</li>
+              <li><b>Agents.</b> First-time-buyer specialists, vetted.</li>
+            </ul>
+
+            <h3>Trust signals</h3>
+            <ul>
+              <li>One <b>Top match</b> hero per session — the most beneficial partner for this user this week.</li>
+              <li>Star ratings + "Perfect for your stage" green flag.</li>
+              <li>Outline CTAs (not solid) — partners feel like options, not pressure.</li>
+            </ul>
+          </div>
+        }/>
+
+      <Page idx={6} title="You" sub={"Profile · goals · settings"}
+        label="profile"
+        screen={<ScreenProfile onSheet={()=>{}}/>}
+        notes={
+          <div>
+            <h2>The control room.</h2>
+            <p className="lede">Identity, goals, and settings live here — explicit, editable, and the only place the user changes the destination of their plan.</p>
+
+            <h3>Sections</h3>
+            <ul>
+              <li><b>Identity card.</b> Pattern avatar, name, email, current stage tag in clay.</li>
+              <li><b>Your goals.</b> Move-in date, down payment target, credit target — every value is the source of truth that powers Today and Progress.</li>
+              <li><b>Settings.</b> Notifications, linked accounts, privacy, support.</li>
+            </ul>
+
+            <h3>Notes for engineering</h3>
+            <ul>
+              <li>Editing any goal triggers a recompute of timeline copy ("Spring 2027 → Summer 2026").</li>
+              <li>Privacy controls govern partner-share scope — never silent.</li>
+              <li>Footer reminds the user how long they've been on the journey. Pathway is the long game.</li>
+            </ul>
+          </div>
+        }/>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+
+// Auto-print after fonts + JSX + a safety delay
+(async () => {
+  try { await document.fonts.ready; } catch(e) {}
+  // Wait for React to render and Babel to finish
+  await new Promise(r => setTimeout(r, 1200));
+  window.print();
+})();
+</script>
+</body>
+</html>

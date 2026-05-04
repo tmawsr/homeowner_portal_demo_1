@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Pathway · HomeBuyer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600&family=Inter+Tight:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:#00394a;color:#FFFFFF;font-family:"Inter Tight",system-ui,sans-serif;min-height:100vh}
+  body{display:flex;align-items:center;justify-content:center;padding:24px;overflow-x:hidden}
+  .stage{display:flex;flex-direction:column;align-items:center;gap:18px}
+  .caption{font-family:"Fraunces",serif;font-size:15px;color:rgba(255,255,255,0.55);letter-spacing:0.2px}
+  ::-webkit-scrollbar{display:none}
+</style>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel" src="tweaks-panel.jsx"></script>
+<script type="text/babel" src="shared.jsx"></script>
+<script type="text/babel" src="screen-today.jsx"></script>
+<script type="text/babel" src="screens-other.jsx"></script>
+
+<script type="text/babel">
+const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+  "stage": "savings",
+  "dark": false,
+  "showPartners": true,
+  "progressStyle": "segmented",
+  "density": "regular"
+}/*EDITMODE-END*/;
+
+function App() {
+  const [t, setTweak] = useTweaks(TWEAK_DEFAULTS);
+  const [tab, setTab] = React.useState('home');
+  const [sheet, setSheet] = React.useState(null);
+
+  const T = t.dark ? PALETTE.dark : PALETTE.light;
+  const ctx = {
+    T, dark: t.dark,
+    density: DENSITY[t.density] || 1,
+    showPartners: t.showPartners,
+    progressStyle: t.progressStyle,
+    stage: t.stage,
+  };
+
+  React.useEffect(() => {
+    document.body.style.background = t.dark ? '#00394a' : '#004f68';
+  }, [t.dark]);
+
+  let screen = null;
+  if (tab === 'home') screen = <ScreenToday onSheet={setSheet} onTab={setTab}/>;
+  else if (tab === 'progress') screen = <ScreenProgress onSheet={setSheet}/>;
+  else if (tab === 'coach') screen = <ScreenCoach onSheet={setSheet}/>;
+  else if (tab === 'partners') screen = <ScreenPartners/>;
+  else if (tab === 'profile') screen = <ScreenProfile onSheet={setSheet}/>;
+
+  const sheetTitle = sheet === 'log-credit' ? 'Log progress' : sheet === 'log-savings' ? 'Log progress' : sheet === 'coach' ? 'Schedule with Dr. Drummond' : '';
+  const showFAB = tab === 'home' || tab === 'progress';
+
+  return (
+    <ThemeCtx.Provider value={ctx}>
+      <div className="stage">
+        <Phone>
+          <div data-screen-label={tab} style={{ position: 'absolute', inset: 0, paddingTop: 54, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+            <div style={{ flex: 1, overflow: 'auto', paddingBottom: 96 }}>
+              {screen}
+            </div>
+            {showFAB && <FAB onClick={() => setSheet('log')} bottom={104}/>}
+            <BottomNav active={tab} onChange={(k) => { setTab(k); setSheet(null); }}/>
+          </div>
+
+          <BottomSheet open={!!sheet} onClose={() => setSheet(null)} title={sheetTitle}>
+            {sheet === 'log' && <LogUpdateSheet onClose={() => setSheet(null)}/>}
+            {sheet === 'log-credit' && <LogUpdateSheet presetType="credit" onClose={() => setSheet(null)}/>}
+            {sheet === 'log-savings' && <LogUpdateSheet presetType="savings" onClose={() => setSheet(null)}/>}
+            {sheet === 'coach' && <ScheduleCoachSheet onClose={() => setSheet(null)}/>}
+          </BottomSheet>
+        </Phone>
+        <div className="caption">Pathway · HomeBuyer · 393 × 852</div>
+      </div>
+
+      <TweaksPanel>
+        <TweakSection label="Stage in journey"/>
+        <TweakSelect label="Stage" value={t.stage}
+          options={STEPS.map(s => ({ value: s.key, label: s.full }))}
+          onChange={(v) => setTweak('stage', v)}/>
+
+        <TweakSection label="Theme"/>
+        <TweakToggle label="Dark mode" value={t.dark} onChange={(v) => setTweak('dark', v)}/>
+        <TweakRadio label="Density" value={t.density}
+          options={['compact', 'regular', 'cozy']}
+          onChange={(v) => setTweak('density', v)}/>
+
+        <TweakSection label="Today screen"/>
+        <TweakRadio label="Progress bar style" value={t.progressStyle}
+          options={['segmented', 'dots', 'ring']}
+          onChange={(v) => setTweak('progressStyle', v)}/>
+        <TweakToggle label="Show partner boosts" value={t.showPartners}
+          onChange={(v) => setTweak('showPartners', v)}/>
+
+        <TweakSection label="Quick jump"/>
+        <TweakButton label="Open chat with Dr. Drummond" onClick={() => setTab('coach')}/>
+        <TweakButton label="Open partners" onClick={() => setTab('partners')}/>
+        <TweakButton label="Open log-update sheet" onClick={() => setSheet('log')}/>
+        <TweakButton label="Open scheduling sheet" onClick={() => setSheet('coach')}/>
+      </TweaksPanel>
+    </ThemeCtx.Provider>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>
